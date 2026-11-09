@@ -116,3 +116,24 @@ export function sampleCamt053(): string {
 </Document>
 `;
 }
+
+/** Relevé MT940 d'exemple, avec un :86: structuré à la mode SEPA (/EREF/…/NAME/…/REMI/…). */
+export function sampleMt940(): string {
+  const yymmdd = (iso: string) => iso.slice(2).replace(/-/g, '');
+  const mmdd = (iso: string) => iso.slice(5).replace('-', '');
+  const swift = (n: number) => Math.abs(n).toFixed(2).replace('.', ',');
+  const closing = Math.round((SAMPLE_OPENING + SAMPLE_MOVES.reduce((s, m) => s + m.amount, 0)) * 100) / 100;
+  const types: Record<string, string> = { '05': 'NTRF', '06': 'NTRF', B1: 'NDDT', '11': 'NMSC', '02': 'NCLR', '01': 'NCHK', '62': 'NCHG' };
+  const iban = `FR76${BANK}${BRANCH}${ACCOUNT}86`;
+  const lines = [':20:RELEVE202610', `:25:${iban}`, ':28C:10/1', `:60F:${SAMPLE_OPENING < 0 ? 'D' : 'C'}260930EUR${swift(SAMPLE_OPENING)}`];
+  SAMPLE_MOVES.forEach((m, i) => {
+    const extra = Object.fromEntries(m.extra ?? []);
+    lines.push(`:61:${yymmdd(m.value)}${mmdd(m.date)}${m.amount < 0 ? 'D' : 'C'}${swift(m.amount)}${types[m.op] ?? 'NMSC'}${m.ref ?? 'NONREF'}//2026${String(i + 1).padStart(6, '0')}`);
+    const party = m.amount < 0 ? extra.NBE : extra.NPY;
+    const parts = [extra.RCN ? `/EREF/${extra.RCN}` : '/EREF/NOTPROVIDED', extra.RUM ? `/MREF/${extra.RUM}` : '', party ? `/NAME/${party}` : '', `/REMI/${extra.LCC ?? m.label}`].join('');
+    // Le champ :86: est découpé en lignes de 65 caractères au plus.
+    lines.push(':86:' + parts.slice(0, 65), ...(parts.slice(65).match(/.{1,65}/g) ?? []));
+  });
+  lines.push(`:62F:${closing < 0 ? 'D' : 'C'}261031EUR${swift(closing)}`, '-');
+  return lines.join('\r\n') + '\r\n';
+}

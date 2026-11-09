@@ -27,6 +27,7 @@ export function href(path: string): string {
 export const NAV = [
   { href: '/', label: 'Convertir' },
   { href: '/convertir-cfonb-120-excel/', label: 'CFONB 120' },
+  { href: '/convertir-mt940-excel/', label: 'MT940' },
   { href: '/convertir-camt-053-excel/', label: 'camt.053' },
   { href: '/guides/', label: 'Guides' },
 ];

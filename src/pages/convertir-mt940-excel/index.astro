@@ -1,0 +1,94 @@
+---
+import Base from '../../layouts/Base.astro';
+import Converter from '../../components/Converter.astro';
+import Crumbs from '../../components/Crumbs.astro';
+import Faq from '../../components/Faq.astro';
+import ToolCards from '../../components/ToolCards.astro';
+import { breadcrumbSchema, faqSchema, href, toolSchema, type FaqItem } from '../../site';
+
+const site = Astro.site!;
+const crumbs = [
+  { name: 'Accueil', path: '/' },
+  { name: 'Convertir un MT940 en Excel', path: '/convertir-mt940-excel/' },
+];
+const faq: FaqItem[] = [
+  {
+    q: 'Quelle extension a un fichier MT940 ?',
+    a: '<p>Il n’y en a pas de standard : on rencontre .sta, .940, .mt940, .txt ou .dat selon la banque. L’outil reconnaît le contenu (champs <code>:20:</code>, <code>:60F:</code>, <code>:61:</code>), quelle que soit l’extension.</p>',
+  },
+  {
+    q: 'Mon fichier commence par {1:F01…}, est-ce normal ?',
+    a: '<p>Oui : c’est l’enveloppe SWIFT, avec les blocs d’en-tête 1 et 2 et le texte du message dans le bloc 4. L’outil ne garde que les blocs 4 et sait lire plusieurs relevés à la suite dans le même fichier.</p>',
+  },
+  {
+    q: 'Que veulent dire RC et RD dans le champ :61: ?',
+    a: '<p>Ce sont des annulations : RC (<em>reversal of credit</em>) annule un crédit, donc débite le compte ; RD (<em>reversal of debit</em>) annule un débit, donc crédite le compte. Le montant est converti avec le bon signe et l’opération est marquée « annulation ».</p>',
+  },
+  {
+    q: 'Les informations du champ :86: sont-elles exploitées ?',
+    a: '<p>Oui. Le format structuré à la mode SEPA (<code>/EREF/…/NAME/…/REMI/…</code>) et le format à sous-champs utilisé notamment par les banques allemandes (<code>?20…?32…</code>) sont découpés : nom du tiers, IBAN, référence de bout en bout, mandat, motif. Un :86: en texte libre est repris tel quel.</p>',
+  },
+];
+---
+<Base
+  title="Convertir un relevé MT940 en Excel ou CSV (SWIFT, gratuit)"
+  description="Ouvrez un relevé SWIFT MT940 dans Excel : champs :61: et :86: décodés, tiers et références extraits, soldes vérifiés. Export Excel, CSV ou OFX, gratuit."
+  keywords={["convertir mt940 en excel", "mt940 excel", "mt940 csv", "lire fichier mt940", "ouvrir mt940", "relevé mt940", "format mt940", "swift mt940", "mt940 :61: :86:", "mt940 convertisseur gratuit", "fichier .sta", "mt940 ofx"]}
+  schema={[
+    toolSchema(site, { name: 'Convertisseur MT940 vers Excel', path: '/convertir-mt940-excel/', description: 'Convertit un relevé SWIFT MT940 en Excel, CSV ou OFX.' }),
+    breadcrumbSchema(site, crumbs),
+    faqSchema(faq),
+  ]}
+>
+  <Crumbs items={crumbs} />
+  <section class="hero wrap">
+    <h1>Convertir un relevé MT940 en Excel</h1>
+    <p class="lead">
+      Le MT940 est le relevé de compte au format SWIFT, utilisé partout dans le monde et par les grandes entreprises en France.
+      Déposez-le ici pour obtenir un tableau propre, une ligne par opération, avec les tiers et les références extraits.
+    </p>
+  </section>
+
+  <div class="wrap">
+    <Converter sample="mt940" label="Déposez votre relevé MT940" />
+
+    <article class="prose narrow section">
+      <h2>À quoi ressemble un MT940</h2>
+      <pre><code>{`:20:RELEVE202610
+:25:FR7612345001230001234567886
+:28C:10/1
+:60F:C260930EUR3250,75
+:61:2610011001C2400,00NTRFVIR0001//2026000001
+:86:/EREF/F2026118/NAME/ATELIER BOIS ET CIE/REMI/FACTURE F-2026-118
+:61:2610031003D186,42NDDTNONREF//2026000002
+:86:/EREF/NOTPROVIDED/MREF/MDT-0045871/NAME/FOURNISSEUR ENERGIE SA
+:62F:C261031EUR4964,43
+-`}</code></pre>
+      <p>
+        Chaque ligne commence par une étiquette entre deux-points. Les plus importantes : <code>:25:</code> le compte,
+        <code>:60F:</code> le solde de départ, <code>:61:</code> une opération, <code>:86:</code> le détail de cette opération,
+        et <code>:62F:</code> le solde final. Le guide <a href={href('/guides/format-mt940/')}>du format MT940</a> détaille chaque champ.
+      </p>
+
+      <h2>Ce que fait le convertisseur</h2>
+      <ul>
+        <li><strong>Décode le champ :61:</strong> date de valeur, date de comptabilisation (en gérant le passage d’une année à l’autre), sens, montant, code d’opération et références.</li>
+        <li><strong>Traduit les codes d’opération</strong> SWIFT : <code>TRF</code> virement, <code>DDT</code> prélèvement, <code>CHK</code> chèque, <code>CHG</code> frais, <code>INT</code> intérêts…</li>
+        <li><strong>Découpe le champ :86:</strong> pour remplir les colonnes tiers, IBAN, référence de bout en bout et mandat.</li>
+        <li><strong>Lit l’enveloppe SWIFT</strong> et les fichiers contenant plusieurs relevés ou plusieurs comptes.</li>
+        <li><strong>Vérifie les soldes</strong> : solde :60F: + opérations = solde :62F:.</li>
+      </ul>
+      <p>
+        Le résultat est le même tableau que pour un relevé CFONB ou camt.053 : vous pouvez convertir les relevés de toutes vos banques
+        dans le même format Excel. Si votre banque propose aussi le camt.053, la page <a href={href('/guides/cfonb-ou-camt-053/')}>CFONB, MT940 ou camt.053</a> vous aide à choisir.
+      </p>
+    </article>
+
+    <Faq items={faq} />
+
+    <section class="section">
+      <h2>Les autres outils</h2>
+      <ToolCards exclude="/convertir-mt940-excel/" />
+    </section>
+  </div>
+</Base>

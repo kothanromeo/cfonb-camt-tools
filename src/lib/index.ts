@@ -1,11 +1,13 @@
 import { looksLikeCamt, parseCamt } from './camt';
 import { looksLikeCfonb, parseCfonb } from './cfonb';
+import { looksLikeMt940, parseMt940 } from './mt940';
 import type { ParseResult } from './types';
 import { decodeText } from './util';
 
 export * from './types';
 export { parseCfonb, decodeAmount, encodeAmount, decodeDate } from './cfonb';
 export { parseCamt, CamtError } from './camt';
+export { parseMt940, parse86 } from './mt940';
 export { toCsv, toXlsx, toOfx, COLUMNS } from './export';
 export { OP_CODES, QUALIFIERS } from './codes';
 
@@ -22,11 +24,9 @@ export function parseStatement(input: Uint8Array | string): ParseResult {
     );
   }
   if (looksLikeCfonb(text)) return parseCfonb(text);
-  if (/^:20:|:60F:|:61:/m.test(text.slice(0, 3000))) {
-    throw new FormatError('Ce fichier ressemble à un relevé SWIFT MT940, un format qui n’est pas encore pris en charge.');
-  }
+  if (looksLikeMt940(text)) return parseMt940(text);
   if (/^OFXHEADER|<OFX>/i.test(head)) throw new FormatError('Ce fichier est déjà au format OFX.');
   throw new FormatError(
-    'Format non reconnu. Un relevé CFONB 120 commence par « 01 » suivi du code banque ; un relevé camt.053 est un fichier XML ISO 20022.',
+    'Format non reconnu. Un relevé CFONB 120 commence par « 01 » suivi du code banque ; un relevé MT940 contient des champs :20:, :60F:, :61: ; un relevé camt.053 est un fichier XML ISO 20022.',
   );
 }

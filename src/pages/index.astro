@@ -20,7 +20,7 @@ const faq: FaqItem[] = [
   },
   {
     q: 'Quels formats sont reconnus ?',
-    a: '<p>Le relevé de compte CFONB « 120 caractères » (enregistrements 01, 04, 05 et 07), et les messages ISO 20022 camt.053 (relevé de fin de journée), camt.052 (relevé intrajournalier) et camt.054 (avis de débit et de crédit), toutes versions du schéma. Le format est détecté automatiquement.</p>',
+    a: '<p>Le relevé de compte CFONB « 120 caractères » (enregistrements 01, 04, 05 et 07), le relevé SWIFT MT940, et les messages ISO 20022 camt.053 (relevé de fin de journée), camt.052 (relevé intrajournalier) et camt.054 (avis de débit et de crédit), toutes versions du schéma. Le format est détecté automatiquement.</p>',
   },
   {
     q: 'Dans quels formats puis-je exporter ?',
@@ -33,13 +33,13 @@ const faq: FaqItem[] = [
 ];
 ---
 <Base
-  title="Convertir un relevé bancaire CFONB ou camt.053 en Excel (gratuit)"
-  description="Convertissez un relevé bancaire CFONB 120 ou camt.053 en Excel, CSV ou OFX, gratuitement. Soldes contrôlés, codes opérations décodés. Le fichier reste dans votre navigateur."
-  keywords={["convertir relevé bancaire excel", "cfonb excel", "convertir cfonb en excel", "camt.053 excel", "relevé bancaire csv", "lire fichier cfonb", "ouvrir fichier camt.053", "cfonb 120", "relevé cfonb", "iso 20022 relevé", "relevé de compte informatisé", "relevé bancaire ofx", "convertisseur relevé bancaire gratuit"]}
+  title="Convertir un relevé bancaire CFONB, MT940 ou camt.053 en Excel (gratuit)"
+  description="Convertissez un relevé bancaire CFONB 120, MT940 ou camt.053 en Excel, CSV ou OFX, gratuitement. Soldes contrôlés, codes opérations décodés. Le fichier reste dans votre navigateur."
+  keywords={["convertir relevé bancaire excel", "cfonb excel", "convertir cfonb en excel", "camt.053 excel", "relevé bancaire csv", "lire fichier cfonb", "ouvrir fichier camt.053", "cfonb 120", "relevé cfonb", "mt940 excel", "convertir mt940", "iso 20022 relevé", "relevé de compte informatisé", "relevé bancaire ofx", "convertisseur relevé bancaire gratuit"]}
   schema={[toolSchema(site, { name: 'Convertisseur CFONB et camt.053 vers Excel', path: '/', description: 'Convertit les relevés bancaires CFONB 120 et ISO 20022 camt.053 en Excel, CSV et OFX, dans le navigateur.' }), faqSchema(faq)]}
 >
   <section class="hero wrap">
-    <h1>Convertir un relevé bancaire CFONB ou camt.053 en Excel</h1>
+    <h1>Convertir un relevé bancaire CFONB, MT940 ou camt.053 en Excel</h1>
     <p class="lead">
       Déposez le fichier de relevé téléchargé depuis votre banque : vous obtenez un tableau propre, avec une ligne par opération,
       les codes opérations traduits et les soldes vérifiés. Export Excel, CSV ou OFX.
@@ -47,6 +47,7 @@ const faq: FaqItem[] = [
     <ul class="badges">
       <li>100 % dans le navigateur</li>
       <li>CFONB 120</li>
+      <li>MT940</li>
       <li>camt.053 · camt.052 · camt.054</li>
       <li>Gratuit et open source</li>
     </ul>

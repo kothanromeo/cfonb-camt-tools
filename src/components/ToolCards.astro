@@ -7,10 +7,11 @@ const { exclude } = Astro.props;
 const tools = [
   { path: '/', title: 'Relevé bancaire en Excel', text: 'Déposez n’importe quel relevé CFONB ou ISO 20022 : le format est détecté automatiquement.' },
   { path: '/convertir-cfonb-120-excel/', title: 'Convertir un CFONB 120', text: 'Le relevé « 120 caractères » des banques françaises, décodé ligne par ligne, avec les compléments 05.' },
+  { path: '/convertir-mt940-excel/', title: 'Convertir un MT940', text: 'Le relevé SWIFT international, champs :61: et :86: décodés, enveloppe SWIFT et relevés multiples gérés.' },
   { path: '/convertir-camt-053-excel/', title: 'Convertir un camt.053', text: 'Le relevé XML ISO 20022 (camt.053, camt.052, camt.054) transformé en tableau lisible.' },
 ].filter((t) => t.path !== exclude);
 ---
-<div class="grid-3">
+<div class="grid-3 grid-tools">
   {tools.map((t) => (
     <a class="card tool-card" href={href(t.path)}>
       <h3>{t.title}</h3>

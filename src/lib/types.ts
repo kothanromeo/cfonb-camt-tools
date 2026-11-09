@@ -1,4 +1,4 @@
-export type SourceFormat = 'CFONB 120' | 'camt.053' | 'camt.052' | 'camt.054';
+export type SourceFormat = 'CFONB 120' | 'camt.053' | 'camt.052' | 'camt.054' | 'MT940';
 
 export interface Balance {
   /** AAAA-MM-JJ */

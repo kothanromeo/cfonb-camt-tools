@@ -2,14 +2,14 @@
 interface Props {
   label?: string;
   /** Exemple proposé par défaut : CFONB ou camt.053. */
-  sample?: 'cfonb' | 'camt';
+  sample?: 'cfonb' | 'camt' | 'mt940';
 }
-const { label = 'Déposez votre relevé bancaire (CFONB 120 ou camt.053)', sample = 'cfonb' } = Astro.props;
+const { label = 'Déposez votre relevé bancaire (CFONB 120, MT940 ou camt.053)', sample = 'cfonb' } = Astro.props;
 ---
 <section class="converter" data-converter data-sample-kind={sample} aria-label="Convertisseur de relevés bancaires">
   <div class="drop" data-drop>
     <p class="big">{label}</p>
-    <p>Fichiers .txt, .dat, .cfonb, .120, .xml… Glissez-déposez le fichier ici, ou</p>
+    <p>Fichiers .txt, .dat, .cfonb, .120, .sta, .940, .xml… Glissez-déposez le fichier ici, ou</p>
     <div class="btn-row" style="justify-content:center">
       <label class="btn" style="margin:0;color:var(--accent-ink)">
         Choisir un fichier

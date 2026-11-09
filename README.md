@@ -2,7 +2,7 @@
 
 # CFONB & camt Tools
 
-**Convertir un relevé bancaire CFONB 120 ou camt.053 en Excel, CSV ou OFX, sans envoyer le fichier à un serveur.**
+**Convertir un relevé bancaire CFONB 120, MT940 ou camt.053 en Excel, CSV ou OFX, sans envoyer le fichier à un serveur.**
 
 [**→ Ouvrir le convertisseur**](https://cfonb-camt-tools.kothanromeo.dev/) · [Guides](https://cfonb-camt-tools.kothanromeo.dev/guides/) · [Signaler un problème](https://github.com/kothanromeo/cfonb-camt-tools/issues)
 
@@ -19,7 +19,8 @@ Ici, tout se passe dans le navigateur.
 
 ## Fonctionnalités
 
-- **Détection automatique** du format : CFONB 120, camt.053, camt.052, camt.054 (toutes versions du schéma ISO 20022).
+- **Détection automatique** du format : CFONB 120, MT940 (SWIFT), camt.053, camt.052, camt.054 (toutes versions du schéma ISO 20022).
+- **MT940** : enveloppe SWIFT et relevés multiples, champ `:61:` (dates de valeur et de comptabilisation, annulations RC/RD, codes TRF/DDT/CHK…), champ `:86:` structuré façon SEPA (`/EREF/…/NAME/…/REMI/…`) ou allemand (`?20…?32…`).
 - **CFONB 120** : décodage des montants signés (`{`, `A`–`I`, `}`, `J`–`R`), dates JJMMAA, compléments `05` rattachés à leur mouvement (payeur, bénéficiaire, référence de bout en bout, mandat SEPA), fichiers avec ou sans retours à la ligne, encodage UTF-8 ou Windows-1252.
 - **camt.053** : soldes `OPBD`/`PRCD`/`CLBD`, écritures et détail des transactions, tiers (`Nm` ou `Pty/Nm`), codes ISO et codes CFONB propriétaires, écritures groupées.
 - **Codes opérations interbancaires CFONB** traduits en clair (01, 05, 06, B1, A1…).
@@ -32,6 +33,7 @@ Ici, tout se passe dans le navigateur.
 src/lib/
 ├── cfonb.ts    Lecture du CFONB 120 (zones, signe superposé, contrôles de soldes)
 ├── camt.ts     Lecture des camt.052 / camt.053 / camt.054
+├── mt940.ts    Lecture des relevés SWIFT MT940
 ├── codes.ts    Codes opérations interbancaires et qualifiants des compléments
 ├── export.ts   CSV, XLSX (Office Open XML écrit à la main + fflate) et OFX
 ├── sample.ts   Relevés d'exemple fictifs
@@ -51,7 +53,7 @@ npm run build   # site statique dans dist/
 
 ## Contribuer
 
-Les issues et pull requests sont les bienvenues : relevés mal lus (**anonymisez-les** : numéros de compte, noms, montants), qualifiants `05` propres à une banque, nouveaux formats (MT940, CFONB 240).
+Les issues et pull requests sont les bienvenues : relevés mal lus (**anonymisez-les** : numéros de compte, noms, montants), qualifiants `05` propres à une banque, nouveaux formats (CFONB 240, MT942).
 
 ## Licence
 

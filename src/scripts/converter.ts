@@ -196,13 +196,13 @@ export function mountConverter(root: HTMLElement) {
     handle(e.dataTransfer?.files[0]);
   });
   sampleBtn.addEventListener('click', () => {
-    const camt = root.dataset.sampleKind === 'camt';
+    const kind = root.dataset.sampleKind;
     run(
       async () => {
         const m = await import('../lib/sample');
-        return camt ? m.sampleCamt053() : m.sampleCfonb();
+        return kind === 'camt' ? m.sampleCamt053() : kind === 'mt940' ? m.sampleMt940() : m.sampleCfonb();
       },
-      camt ? 'exemple-camt053.xml' : 'exemple-cfonb120.txt',
+      kind === 'camt' ? 'exemple-camt053.xml' : kind === 'mt940' ? 'exemple-mt940.sta' : 'exemple-cfonb120.txt',
       'Création d’un relevé d’exemple…',
     );
   });

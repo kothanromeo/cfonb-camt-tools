@@ -313,3 +313,5 @@ table.ops small { color: var(--muted); }
 .acct-kv dd { margin: 0; font-size: 1.05rem; font-variant-numeric: tabular-nums; }
 .spec td, .spec th { font-size: 0.9rem; }
 .spec code { white-space: nowrap; }
+
+.grid-tools { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }

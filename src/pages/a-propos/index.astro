@@ -1,0 +1,52 @@
+---
+import Base from '../../layouts/Base.astro';
+import Crumbs from '../../components/Crumbs.astro';
+import { SITE, breadcrumbSchema } from '../../site';
+
+const crumbs = [
+  { name: 'Accueil', path: '/' },
+  { name: 'À propos', path: '/a-propos/' },
+];
+const person = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: SITE.author,
+  url: SITE.authorUrl,
+  sameAs: [SITE.linkedin, SITE.instagram, SITE.portfolio, SITE.authorUrl],
+  jobTitle: 'Développeur',
+};
+---
+<Base
+  keywords={["cfonb camt tools", "roméo kothan", "convertisseur relevé bancaire open source", "outil cfonb open source", "développeur"]}
+  title="À propos du projet"
+  description="CFONB & camt Tools est un projet open source de Roméo Kothan : un convertisseur gratuit de relevés bancaires CFONB 120 et camt.053, qui fonctionne sans envoyer vos fichiers."
+  schema={[person, breadcrumbSchema(Astro.site!, crumbs)]}
+>
+  <Crumbs items={crumbs} />
+  <article class="wrap narrow prose" style="padding-top:1.5rem">
+    <h1>À propos</h1>
+    <p>
+      Je m’appelle {SITE.author}, je suis développeur. Les relevés bancaires au format CFONB ou camt.053 passent chaque jour entre les mains
+      des comptables, des trésoriers et des développeurs qui intègrent des banques dans un logiciel. Pour les lire, il fallait soit un logiciel
+      de comptabilité, soit un script, soit un service en ligne payant à qui confier ses relevés. J’ai fait l’outil que j’aurais voulu trouver.
+    </p>
+    <h2>Les principes</h2>
+    <ul>
+      <li><strong>Rien ne sort de votre navigateur.</strong> Le site est un ensemble de fichiers statiques : pas de serveur d’application, pas de base de données, pas de traceur publicitaire.</li>
+      <li><strong>Le code est public</strong>, sous licence MIT. Vous pouvez le lire, le modifier ou l’héberger vous-même.</li>
+      <li><strong>Le résultat est vérifié.</strong> Chaque relevé est recalculé avant export : un écart de solde est signalé, jamais masqué.</li>
+    </ul>
+    <h2>Sous le capot</h2>
+    <p>
+      Le site est construit avec Astro. Le CFONB 120 est décodé position par position selon la norme CFONB ; les messages ISO 20022 sont lus
+      avec le parseur XML du navigateur, quelle que soit la version du schéma. Le fichier Excel est écrit directement au format Office Open XML,
+      sans bibliothèque tableur, et compressé avec fflate. L’ensemble est couvert par des tests automatiques.
+    </p>
+    <h2>Contribuer, signaler un problème</h2>
+    <p>
+      Un relevé mal lu, un qualifiant inconnu, un format à ajouter (MT940, CFONB 240…) ? Ouvrez une <a href={`${SITE.repo}/issues`} rel="noopener">issue sur GitHub</a>.
+      Si vous joignez un fichier, remplacez d’abord les numéros de compte, noms et montants réels.
+    </p>
+    <p>Vous pouvez aussi me retrouver sur <a href={SITE.linkedin} rel="me noopener">LinkedIn</a>.</p>
+  </article>
+</Base>

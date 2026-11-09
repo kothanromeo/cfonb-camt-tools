@@ -1,0 +1,103 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Converter from '../components/Converter.astro';
+import ToolCards from '../components/ToolCards.astro';
+import Faq from '../components/Faq.astro';
+import { faqSchema, href, toolSchema, type FaqItem } from '../site';
+
+const site = Astro.site!;
+const posts = (await getCollection('guides')).sort((a, b) => +b.data.published - +a.data.published);
+
+const faq: FaqItem[] = [
+  {
+    q: 'Comment ouvrir un fichier CFONB dans Excel ?',
+    a: '<p>Ouvert directement dans Excel, un fichier CFONB 120 donne une seule colonne de texte illisible : les montants sont collés aux codes et leur dernier chiffre est remplacé par une lettre qui porte le signe. Déposez plutôt le fichier dans le convertisseur ci-dessus et téléchargez le résultat en .xlsx : une ligne par opération, des dates et des montants que l’on peut trier et additionner.</p>',
+  },
+  {
+    q: 'Mon relevé est-il envoyé sur un serveur ?',
+    a: '<p>Non. Le site est un ensemble de fichiers statiques sans serveur d’application : la lecture du relevé et la création du fichier Excel se font en JavaScript dans votre navigateur. Après le chargement de la page, vous pouvez même couper votre connexion, la conversion fonctionne toujours.</p>',
+  },
+  {
+    q: 'Quels formats sont reconnus ?',
+    a: '<p>Le relevé de compte CFONB « 120 caractères » (enregistrements 01, 04, 05 et 07), et les messages ISO 20022 camt.053 (relevé de fin de journée), camt.052 (relevé intrajournalier) et camt.054 (avis de débit et de crédit), toutes versions du schéma. Le format est détecté automatiquement.</p>',
+  },
+  {
+    q: 'Dans quels formats puis-je exporter ?',
+    a: '<p>Excel (.xlsx) avec une feuille « Opérations » et une feuille « Soldes », CSV au format français (point-virgule, virgule décimale), CSV international (virgule, point décimal, dates ISO) et OFX pour l’import dans un logiciel de comptabilité ou de gestion de budget.</p>',
+  },
+  {
+    q: 'Le relevé de ma banque est en PDF, ça marche ?',
+    a: '<p>Non : un PDF n’est pas un fichier de données. Les relevés CFONB et camt.053 se récupèrent dans l’espace « banque en ligne entreprise », souvent dans un menu « Télécharger les relevés » ou « Fichiers EBICS », ou auprès de votre conseiller. Ils sont généralement inclus dans les abonnements de banque à distance pour les professionnels.</p>',
+  },
+];
+---
+<Base
+  title="Convertir un relevé bancaire CFONB ou camt.053 en Excel (gratuit)"
+  description="Convertissez un relevé bancaire CFONB 120 ou camt.053 en Excel, CSV ou OFX, gratuitement. Soldes contrôlés, codes opérations décodés. Le fichier reste dans votre navigateur."
+  keywords={["convertir relevé bancaire excel", "cfonb excel", "convertir cfonb en excel", "camt.053 excel", "relevé bancaire csv", "lire fichier cfonb", "ouvrir fichier camt.053", "cfonb 120", "relevé cfonb", "iso 20022 relevé", "relevé de compte informatisé", "relevé bancaire ofx", "convertisseur relevé bancaire gratuit"]}
+  schema={[toolSchema(site, { name: 'Convertisseur CFONB et camt.053 vers Excel', path: '/', description: 'Convertit les relevés bancaires CFONB 120 et ISO 20022 camt.053 en Excel, CSV et OFX, dans le navigateur.' }), faqSchema(faq)]}
+>
+  <section class="hero wrap">
+    <h1>Convertir un relevé bancaire CFONB ou camt.053 en Excel</h1>
+    <p class="lead">
+      Déposez le fichier de relevé téléchargé depuis votre banque : vous obtenez un tableau propre, avec une ligne par opération,
+      les codes opérations traduits et les soldes vérifiés. Export Excel, CSV ou OFX.
+    </p>
+    <ul class="badges">
+      <li>100 % dans le navigateur</li>
+      <li>CFONB 120</li>
+      <li>camt.053 · camt.052 · camt.054</li>
+      <li>Gratuit et open source</li>
+    </ul>
+  </section>
+
+  <div class="wrap">
+    <Converter />
+
+    <section class="section">
+      <h2>Un format, un outil</h2>
+      <ToolCards exclude="/" />
+    </section>
+
+    <section class="section two-col">
+      <div>
+        <h2>Pourquoi ces fichiers sont illisibles</h2>
+        <p>
+          Les banques transmettent les relevés aux entreprises dans des formats pensés pour les logiciels, pas pour les humains.
+          Le <strong>CFONB 120</strong> aligne des zones de longueur fixe sur 120 caractères, sans séparateur : le montant de chaque opération
+          finit par une lettre qui indique s’il s’agit d’un débit ou d’un crédit. Le <strong>camt.053</strong>, son successeur ISO 20022,
+          est un XML où la moindre opération occupe une trentaine de lignes.
+        </p>
+        <p>
+          Le convertisseur décode les deux et vous rend ce que vous attendiez : un tableau.
+          Les détails de chaque format sont dans <a href={href('/guides/format-cfonb-120/')}>le guide du CFONB 120</a>
+          et <a href={href('/guides/camt-053-explication/')}>celui du camt.053</a>.
+        </p>
+      </div>
+      <div>
+        <h2>Ce que l’outil vérifie</h2>
+        <p>
+          Avant de vous rendre la main, il recalcule le relevé : <em>ancien solde + somme des opérations = nouveau solde</em>.
+          Si ça ne tombe pas juste, c’est qu’il manque des lignes ou que le fichier a été modifié, et vous le savez avant d’importer
+          quoi que ce soit en comptabilité.
+        </p>
+        <p>
+          Pour un camt.053, il compare aussi le nombre d’écritures et le total net avec le récapitulatif fourni par la banque.
+          Les lignes de longueur incorrecte, les dates impossibles et les compléments orphelins sont signalés avec leur numéro de ligne.
+        </p>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Les guides</h2>
+      <ul class="post-list">
+        {posts.map((p) => (
+          <li class="card"><a href={href(`/guides/${p.id}/`)}><h3>{p.data.title}</h3><p>{p.data.description}</p></a></li>
+        ))}
+      </ul>
+    </section>
+
+    <Faq items={faq} />
+  </div>
+</Base>

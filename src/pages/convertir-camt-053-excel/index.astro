@@ -1,0 +1,102 @@
+---
+import Base from '../../layouts/Base.astro';
+import Converter from '../../components/Converter.astro';
+import Crumbs from '../../components/Crumbs.astro';
+import Faq from '../../components/Faq.astro';
+import ToolCards from '../../components/ToolCards.astro';
+import { breadcrumbSchema, faqSchema, href, toolSchema, type FaqItem } from '../../site';
+
+const site = Astro.site!;
+const crumbs = [
+  { name: 'Accueil', path: '/' },
+  { name: 'Convertir un camt.053 en Excel', path: '/convertir-camt-053-excel/' },
+];
+const faq: FaqItem[] = [
+  {
+    q: 'Quelles versions de camt.053 sont prises en charge ?',
+    a: '<p>Toutes celles que l’on rencontre en pratique, de camt.053.001.02 aux versions récentes (.08 et suivantes). L’outil lit les éléments par leur nom, quel que soit l’espace de noms, et gère les deux façons de nommer les tiers (<code>&lt;Dbtr&gt;&lt;Nm&gt;</code> dans les anciennes versions, <code>&lt;Dbtr&gt;&lt;Pty&gt;&lt;Nm&gt;</code> dans les nouvelles).</p>',
+  },
+  {
+    q: 'Et les fichiers camt.052 et camt.054 ?',
+    a: '<p>Ils sont lus aussi : ils partagent la même structure d’écritures (<code>Ntry</code>). Le camt.052 est un relevé en cours de journée, sans solde de clôture définitif ; le camt.054 un avis de débit ou de crédit, souvent utilisé pour le détail des remises.</p>',
+  },
+  {
+    q: 'Comment sont gérées les écritures groupées (batch booking) ?',
+    a: '<p>Une écriture peut regrouper plusieurs transactions, par exemple une remise de prélèvements. L’outil garde une ligne par écriture, comme sur le relevé, et liste le détail des transactions dans la colonne « Informations complémentaires ».</p>',
+  },
+  {
+    q: 'Le code opération affiché est « 05 », pas un code ISO. Pourquoi ?',
+    a: '<p>Beaucoup de banques françaises renseignent, en plus du code ISO, le code opération CFONB dans la zone propriétaire <code>BkTxCd/Prtry</code>. Quand il est présent, l’outil l’utilise car il est plus précis et identique à celui des relevés CFONB 120. Sinon, il affiche le code ISO (domaine, famille, sous-famille).</p>',
+  },
+];
+---
+<Base
+  title="Convertir un relevé camt.053 en Excel ou CSV (ISO 20022, gratuit)"
+  description="Transformez un relevé bancaire XML camt.053 (ISO 20022) en Excel, CSV ou OFX : une ligne par écriture, tiers, références et soldes vérifiés. Gratuit, sans envoi de fichier."
+  keywords={["convertir camt.053 en excel", "camt.053 excel", "camt053 csv", "lire fichier camt.053", "ouvrir camt.053", "relevé iso 20022", "camt.053 xml", "bank to customer statement", "camt.052 excel", "camt.054 excel", "relevé bancaire xml", "convertisseur camt.053 gratuit", "camt 053 to excel"]}
+  schema={[
+    toolSchema(site, { name: 'Convertisseur camt.053 vers Excel', path: '/convertir-camt-053-excel/', description: 'Convertit un relevé ISO 20022 camt.053 en Excel, CSV ou OFX.' }),
+    breadcrumbSchema(site, crumbs),
+    faqSchema(faq),
+  ]}
+>
+  <Crumbs items={crumbs} />
+  <section class="hero wrap">
+    <h1>Convertir un relevé camt.053 en Excel</h1>
+    <p class="lead">
+      Le camt.053 est le relevé bancaire au format XML ISO 20022. Complet, mais impossible à lire tel quel.
+      Déposez-le ici pour obtenir un tableau d’une ligne par écriture, exportable en Excel, CSV ou OFX.
+    </p>
+  </section>
+
+  <div class="wrap">
+    <Converter sample="camt" label="Déposez votre relevé camt.053 (ou camt.052 / camt.054)" />
+
+    <article class="prose narrow section">
+      <h2>Ce qu’il y a dans un camt.053</h2>
+      <p>
+        Le nom complet du message est <em>BankToCustomerStatement</em>. Un fichier peut contenir plusieurs relevés (<code>Stmt</code>),
+        un par compte et par période. Chaque relevé comprend :
+      </p>
+      <ul>
+        <li>le <strong>compte</strong> (<code>Acct</code>) : IBAN, devise, titulaire, banque ;</li>
+        <li>les <strong>soldes</strong> (<code>Bal</code>) : ouverture <code>OPBD</code>, clôture <code>CLBD</code>, parfois soldes disponibles ;</li>
+        <li>un <strong>récapitulatif</strong> (<code>TxsSummry</code>) : nombre d’écritures et totaux ;</li>
+        <li>les <strong>écritures</strong> (<code>Ntry</code>) : montant, sens (<code>CRDT</code> ou <code>DBIT</code>), dates, code de transaction, et le détail des transactions avec tiers, références et motif.</li>
+      </ul>
+      <p>Une seule écriture, réduite à l’essentiel, ressemble à ceci :</p>
+      <pre><code>{`<Ntry>
+  <Amt Ccy="EUR">186.42</Amt>
+  <CdtDbtInd>DBIT</CdtDbtInd>
+  <Sts><Cd>BOOK</Cd></Sts>
+  <BookgDt><Dt>2026-10-03</Dt></BookgDt>
+  <ValDt><Dt>2026-10-03</Dt></ValDt>
+  <BkTxCd><Prtry><Cd>B1</Cd><Issr>CFONB</Issr></Prtry></BkTxCd>
+  <NtryDtls><TxDtls>
+    <Refs><EndToEndId>NOTPROVIDED</EndToEndId><MndtId>MDT-0045871</MndtId></Refs>
+    <RltdPties><Cdtr><Pty><Nm>FOURNISSEUR ENERGIE SA</Nm></Pty></Cdtr></RltdPties>
+    <RmtInf><Ustrd>PRLV SEPA FOURNISSEUR ENERGIE</Ustrd></RmtInf>
+  </TxDtls></NtryDtls>
+</Ntry>`}</code></pre>
+      <p>Le convertisseur en fait une seule ligne : 03/10/2026, −186,42 €, prélèvement SEPA, Fournisseur Énergie SA, mandat MDT-0045871.</p>
+
+      <h2>Les contrôles effectués</h2>
+      <ul>
+        <li><strong>Soldes</strong> : solde d’ouverture + écritures comptabilisées = solde de clôture.</li>
+        <li><strong>Récapitulatif</strong> : le nombre d’écritures et le total net annoncés par la banque correspondent au contenu.</li>
+        <li><strong>Écritures en attente</strong> (statut <code>PDNG</code>) : signalées et exclues du calcul des soldes.</li>
+      </ul>
+      <p>
+        Pour aller plus loin sur la structure et les codes, lisez <a href={href('/guides/camt-053-explication/')}>le guide du camt.053</a>,
+        ou <a href={href('/guides/cfonb-ou-camt-053/')}>la comparaison entre CFONB 120 et camt.053</a>.
+      </p>
+    </article>
+
+    <Faq items={faq} />
+
+    <section class="section">
+      <h2>Les autres outils</h2>
+      <ToolCards exclude="/convertir-camt-053-excel/" />
+    </section>
+  </div>
+</Base>

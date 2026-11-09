@@ -1,0 +1,41 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Crumbs from '../../components/Crumbs.astro';
+import { breadcrumbSchema, href } from '../../site';
+
+const posts = (await getCollection('guides')).sort((a, b) => +b.data.published - +a.data.published);
+const crumbs = [
+  { name: 'Accueil', path: '/' },
+  { name: 'Guides', path: '/guides/' },
+];
+const fmt = (d: Date) => d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+---
+<Base
+  keywords={["format cfonb 120", "codes opérations interbancaires cfonb", "camt.053", "iso 20022 relevé", "relevé bancaire", "cfonb ou camt.053", "relevé de compte informatisé", "guide cfonb"]}
+  title="Guides CFONB 120 et camt.053 : formats de relevés bancaires"
+  description="Le format CFONB 120 ligne par ligne, la liste des codes opérations interbancaires, la lecture d’un camt.053 et le passage à l’ISO 20022 : des guides concrets, exemples à l’appui."
+  schema={[breadcrumbSchema(Astro.site!, crumbs)]}
+>
+  <Crumbs items={crumbs} />
+  <section class="hero wrap narrow">
+    <h1>Guides des relevés bancaires</h1>
+    <p class="lead">
+      Des explications concrètes sur le format et sur la réforme, écrites par un développeur qui a passé du temps dans les spécifications
+      pour que vous n’ayez pas à le faire.
+    </p>
+  </section>
+  <div class="wrap narrow">
+    <ul class="post-list">
+      {posts.map((p) => (
+        <li class="card">
+          <a href={href(`/guides/${p.id}/`)}>
+            <h2>{p.data.title}</h2>
+            <p>{p.data.description}</p>
+            <time datetime={p.data.published.toISOString()}>{fmt(p.data.published)}</time>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</Base>

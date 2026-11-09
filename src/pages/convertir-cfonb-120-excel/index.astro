@@ -1,0 +1,104 @@
+---
+import Base from '../../layouts/Base.astro';
+import Converter from '../../components/Converter.astro';
+import Crumbs from '../../components/Crumbs.astro';
+import Faq from '../../components/Faq.astro';
+import ToolCards from '../../components/ToolCards.astro';
+import { breadcrumbSchema, faqSchema, href, toolSchema, type FaqItem } from '../../site';
+
+const site = Astro.site!;
+const crumbs = [
+  { name: 'Accueil', path: '/' },
+  { name: 'Convertir un CFONB 120 en Excel', path: '/convertir-cfonb-120-excel/' },
+];
+const faq: FaqItem[] = [
+  {
+    q: 'Pourquoi mes montants CFONB se terminent par une lettre ?',
+    a: '<p>C’est le signe du montant, « superposé » au dernier chiffre. Une accolade ouvrante <code>{</code> ou une lettre de <code>A</code> à <code>I</code> signifie un montant positif se terminant par 0 à 9 ; une accolade fermante <code>}</code> ou une lettre de <code>J</code> à <code>R</code>, un montant négatif. Ainsi <code>0000000018642B</code> avec 2 décimales vaut +1 864,22 €, et <code>0000000018642K</code> vaut −1 864,22 €.</p>',
+  },
+  {
+    q: 'Mon fichier n’a pas de retours à la ligne, est-ce grave ?',
+    a: '<p>Non. Certains systèmes livrent le relevé en un seul bloc continu. L’outil le découpe tout seul par tranches de 120 caractères.</p>',
+  },
+  {
+    q: 'Le convertisseur signale des lignes qui ne font pas 120 caractères.',
+    a: '<p>C’est souvent un éditeur de texte ou un transfert de fichier qui a supprimé les espaces en fin de ligne. L’outil complète ces lignes et la conversion reste juste, mais mieux vaut récupérer le fichier d’origine si vous devez le réimporter ailleurs.</p>',
+  },
+  {
+    q: 'Que contiennent les enregistrements 05 ?',
+    a: '<p>Ce sont des compléments rattachés au mouvement qui les précède : libellé long, nom du payeur ou du bénéficiaire, référence de bout en bout, référence de mandat SEPA, montant en devise d’origine… L’outil les regroupe sur la ligne de l’opération, et place le nom du tiers dans une colonne dédiée.</p>',
+  },
+];
+---
+<Base
+  title="Convertir un fichier CFONB 120 en Excel ou CSV (gratuit, en ligne)"
+  description="Ouvrez un relevé CFONB 120 caractères dans Excel : montants signés décodés, codes opérations interbancaires traduits, compléments 05 regroupés et soldes vérifiés."
+  keywords={["convertir cfonb 120 en excel", "cfonb 120 excel", "fichier cfonb", "lire fichier cfonb", "ouvrir fichier cfonb", "cfonb en csv", "relevé cfonb 120 caractères", "relevé de compte cfonb", "format cfonb 120", "cfonb120", "enregistrement 04 cfonb", "montant cfonb lettre", "convertisseur cfonb gratuit"]}
+  schema={[
+    toolSchema(site, { name: 'Convertisseur CFONB 120 vers Excel', path: '/convertir-cfonb-120-excel/', description: 'Convertit un relevé de compte CFONB 120 caractères en Excel, CSV ou OFX.' }),
+    breadcrumbSchema(site, crumbs),
+    faqSchema(faq),
+  ]}
+>
+  <Crumbs items={crumbs} />
+  <section class="hero wrap">
+    <h1>Convertir un fichier CFONB 120 en Excel</h1>
+    <p class="lead">
+      Le relevé « 120 caractères » est le format que les banques françaises envoient aux logiciels de comptabilité depuis des décennies.
+      Déposez-le ici pour le lire comme un tableau, et l’exporter en Excel, en CSV ou en OFX.
+    </p>
+  </section>
+
+  <div class="wrap">
+    <Converter sample="cfonb" label="Déposez votre relevé CFONB 120" />
+
+    <article class="prose narrow section">
+      <h2>À quoi ressemble un fichier CFONB 120</h2>
+      <p>Ouvert dans un éditeur de texte, un relevé CFONB ressemble à ceci (lignes raccourcies) :</p>
+      <pre><code>{`0112345    00123EUR2 00012345678  300926 …  0000000032507E
+0412345000000123EUR2 0001234567805011026  011026VIR SEPA RECU /DE ATELIER BOIS … 0000000024000{
+0512345000000123EUR2 0001234567805011026     NPYATELIER BOIS ET CIE
+0712345    00123EUR2 00012345678  311026 …  0000000049644C`}</code></pre>
+      <p>Chaque ligne commence par un code sur deux caractères :</p>
+      <ul>
+        <li><strong>01</strong> : l’ancien solde, au début du relevé ;</li>
+        <li><strong>04</strong> : un mouvement (une opération) ;</li>
+        <li><strong>05</strong> : un complément d’information sur le mouvement précédent, facultatif et sans limite de nombre ;</li>
+        <li><strong>07</strong> : le nouveau solde, à la fin du relevé.</li>
+      </ul>
+      <p>
+        Le reste est découpé en zones de longueur fixe : code banque, code guichet, devise, numéro de compte, dates au format JJMMAA,
+        libellé sur 31 caractères, montant sur 14 caractères… Le détail position par position est dans
+        <a href={href('/guides/format-cfonb-120/')}>le guide du format CFONB 120</a>.
+      </p>
+
+      <h2>Ce que fait le convertisseur</h2>
+      <ul>
+        <li><strong>Décode les montants signés</strong> : la dernière lettre devient un signe, et le nombre de décimales indiqué en position 20 est appliqué.</li>
+        <li><strong>Traduit le code opération interbancaire</strong> (positions 33-34) : « 05 » devient « Virements reçus », « B1 » « Prélèvements SEPA domiciliés »… La liste complète est dans <a href={href('/guides/codes-operations-interbancaires-cfonb/')}>le guide des codes opérations</a>.</li>
+        <li><strong>Rattache les compléments 05</strong> à leur opération : nom du payeur ou du bénéficiaire, motif, référence de bout en bout, mandat SEPA.</li>
+        <li><strong>Gère plusieurs comptes et plusieurs jours</strong> dans un même fichier.</li>
+        <li><strong>Vérifie chaque relevé</strong> : ancien solde + mouvements = nouveau solde.</li>
+      </ul>
+
+      <h2>Le fichier Excel obtenu</h2>
+      <p>
+        Une feuille « Opérations » avec une ligne par mouvement : compte, date comptable, date de valeur, libellé, informations complémentaires,
+        tiers, débit, crédit, montant signé, devise, code et type d’opération, références. Les dates sont de vraies dates Excel et les montants
+        de vrais nombres : vous pouvez trier, filtrer et faire un tableau croisé dynamique sans retraitement. Une seconde feuille « Soldes »
+        récapitule chaque relevé.
+      </p>
+      <blockquote>
+        <p>Si vous préférez le CSV, choisissez « CSV (Excel FR) » : point-virgule comme séparateur et virgule décimale, c’est ce qu’attend
+        Excel en français. Le « CSV international » utilise la virgule et le point, plus pratique pour un script ou un import dans un outil anglo-saxon.</p>
+      </blockquote>
+    </article>
+
+    <Faq items={faq} />
+
+    <section class="section">
+      <h2>Les autres outils</h2>
+      <ToolCards exclude="/convertir-cfonb-120-excel/" />
+    </section>
+  </div>
+</Base>

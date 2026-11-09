@@ -9,7 +9,10 @@ export const SITE = {
   portfolio: 'https://kothanromeo.dev/',
   repo: 'https://github.com/kothanromeo/cfonb-camt-tools',
   /** Autres outils du même auteur, liés depuis le pied de page. */
-  siblings: [{ name: 'Factur-X Tools', url: 'https://factur-x-tools.kothanromeo.dev/', text: 'Lire, valider et créer des factures Factur-X' }],
+  siblings: [
+    { name: 'Factur-X Tools', url: 'https://factur-x-tools.kothanromeo.dev/', text: 'Lire, valider et créer des factures Factur-X' },
+    { name: 'FEC Tools', url: 'https://fec-tools.kothanromeo.dev/', text: 'Lire et vérifier un Fichier des Écritures Comptables' },
+  ],
   locale: 'fr_FR',
   lang: 'fr',
 };

@@ -12,6 +12,7 @@ export const SITE = {
   siblings: [
     { name: 'Factur-X Tools', url: 'https://factur-x-tools.kothanromeo.dev/', text: 'Lire, valider et créer des factures Factur-X' },
     { name: 'FEC Tools', url: 'https://fec-tools.kothanromeo.dev/', text: 'Lire et vérifier un Fichier des Écritures Comptables' },
+    { name: 'Vérif Tiers', url: 'https://verif-tiers-tools.kothanromeo.dev/', text: 'Vérifier les SIREN, numéros de TVA et IBAN d’un fichier clients' },
   ],
   locale: 'fr_FR',
   lang: 'fr',

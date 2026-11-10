@@ -214,6 +214,7 @@ legend { font-weight: 700; padding: 0 0.4rem; }
 .prose { font-size: 1.04rem; }
 .prose h2 { border-top: 1px solid var(--line); padding-top: 1.6rem; }
 .prose li { margin: 0.3rem 0; }
+.prose table { display: block; overflow-x: auto; }
 .prose blockquote { margin: 1.2rem 0; padding: 0.6rem 1rem; border-left: 3px solid var(--accent); background: var(--accent-soft); border-radius: 0 8px 8px 0; }
 .prose blockquote p:last-child { margin: 0; }
 .meta { font-size: 0.9rem; color: var(--muted); margin-bottom: 1.5rem; }

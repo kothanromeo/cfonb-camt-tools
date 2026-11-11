@@ -15,6 +15,7 @@ export const SITE = {
     { name: 'Vérif Tiers', url: 'https://verif-tiers-tools.kothanromeo.dev/', text: 'Vérifier les SIREN, numéros de TVA et IBAN d’un fichier clients' },
     { name: 'SEPA XML Tools', url: 'https://sepa-xml-tools.kothanromeo.dev/', text: 'Créer des fichiers de virements et prélèvements SEPA depuis Excel' },
     { name: 'Tacho DDD Tools', url: 'https://tacho-ddd-tools.kothanromeo.dev/', text: 'Lire une carte conducteur de chronotachygraphe (.DDD)' },
+    { name: 'Broderie Tools', url: 'https://broderie-tools.kothanromeo.dev/', text: 'Ouvrir et convertir les fichiers de broderie (PES, DST, JEF)' },
   ],
   locale: 'fr_FR',
   lang: 'fr',
